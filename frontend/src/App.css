@@ -1,0 +1,91 @@
+.workbench {
+  max-width: 800px;
+  margin: 48px auto;
+  padding: 24px;
+}
+
+h1 {
+  margin-bottom: 8px;
+}
+
+form,
+section {
+  margin-top: 24px;
+  padding: 24px;
+  background: white;
+  border: 1px solid #dce2ec;
+  border-radius: 12px;
+}
+
+label {
+  display: block;
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+input {
+  max-width: 100%;
+}
+
+button {
+  padding: 10px 20px;
+  border: 0;
+  border-radius: 8px;
+  background: #2459c4;
+  color: white;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+button:focus-visible,
+input:focus-visible {
+  outline: 3px solid #2459c4;
+  outline-offset: 4px;
+}
+
+[role="alert"] {
+  padding: 16px;
+  color: #8d2020;
+  background: #fff0f0;
+  border-radius: 8px;
+}
+
+dl {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+dd {
+  margin: 0;
+  font-weight: 700;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #e4e8f0;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 600px) {
+  .workbench {
+    margin: 16px auto;
+    padding: 16px;
+  }
+
+  form,
+  section {
+    padding: 16px;
+  }
+}
