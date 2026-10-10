@@ -79,6 +79,9 @@ function App() {
       {report && (
         <section aria-labelledby="report-heading">
           <h2 id="report-heading">Analysis report</h2>
+          <button type="button" onClick={handleDownload}>
+           Download report
+          </button>
 
           <dl>
             <dt>Rows</dt>
@@ -110,6 +113,22 @@ function App() {
       )}
     </main>
   )
+  function handleDownload() {
+  if (!report) return
+
+  const json = JSON.stringify(report, null, 2)
+  const blob = new Blob([json], { type: 'application/json' })
+  const url = URL.createObjectURL(blob)
+
+  const link = document.createElement('a')
+  link.href = url
+  link.download = 'csv-quality-report.json'
+  document.body.appendChild(link)
+  link.click()
+  link.remove()
+
+  setTimeout(() => URL.revokeObjectURL(url), 1000)
+}
 }
 
 export default App
