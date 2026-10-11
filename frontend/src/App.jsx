@@ -94,21 +94,31 @@ function App() {
 
           <h3>Blank values by column</h3>
           <table>
-            <thead>
-              <tr>
-                <th scope="col">Column</th>
-                <th scope="col">Blank values</th>
-              </tr>
-            </thead>
-            <tbody>
-              {report.columns.map((column) => (
-                <tr key={column}>
-                  <th scope="row">{column}</th>
-                  <td>{report.blank_counts[column]}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+  <thead>
+    <tr>
+      <th scope="col">Column</th>
+      <th scope="col">Blank values</th>
+      <th scope="col">Blank percentage</th>
+    </tr>
+  </thead>
+  <tbody>
+    {report.columns.map((column) => (
+      <tr key={column}>
+        <th scope="row">{column}</th>
+        <td>{report.blank_counts[column]}</td>
+        <td>
+          {report.row_count === 0
+            ? '0.0'
+            : (
+                (report.blank_counts[column] / report.row_count) *
+                100
+              ).toFixed(1)}
+          %
+        </td>
+      </tr>
+    ))}
+  </tbody>
+</table>
         </section>
       )}
     </main>
