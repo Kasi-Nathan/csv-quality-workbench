@@ -14,7 +14,8 @@ def analyze_csv(file):
         raise ValueError("CSV column names must be unique.")
 
     blank_counts = {column: 0 for column in columns}
-    seen_rows = set()
+    seen_rows = {}
+    duplicate_rows = []
     duplicate_count = 0
     row_count = 0
 
@@ -30,8 +31,12 @@ def analyze_csv(file):
 
         if row_values in seen_rows:
             duplicate_count += 1
+            duplicate_rows.append({
+            "row": row_count,
+            "matches_row": seen_rows[row_values],
+        })
         else:
-            seen_rows.add(row_values)
+            seen_rows[row_values] = row_count
 
         for column in columns:
             value = row[column]
@@ -44,6 +49,7 @@ def analyze_csv(file):
         "columns": columns,
         "blank_counts": blank_counts,
         "duplicate_count": duplicate_count,
+        "duplicate_rows": duplicate_rows,
     }
 
 

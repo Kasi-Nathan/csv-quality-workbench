@@ -1,3 +1,4 @@
 .venv/
 __pycache__/
 empty.csv
+csv-quality-report.json
