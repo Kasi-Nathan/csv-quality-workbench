@@ -25,6 +25,7 @@ class TestCsvUpload(unittest.TestCase):
             "columns": ["name", "age"],
             "blank_counts": {"name": 0, "age": 0},
             "duplicate_count": 0,
+            "duplicate_rows": [],
         })
 
     def test_blanks_and_duplicates(self):
@@ -35,6 +36,10 @@ class TestCsvUpload(unittest.TestCase):
         self.assertEqual(report["row_count"], 3)
         self.assertEqual(report["blank_counts"], {"name": 0, "age": 2})
         self.assertEqual(report["duplicate_count"], 1)
+        self.assertEqual(
+            report["duplicate_rows"],
+            [{"row": 2, "matches_row": 1}],
+        )
 
     def test_empty_csv(self):
         response = self.upload(b"")
@@ -59,3 +64,21 @@ class TestCsvUpload(unittest.TestCase):
             response.json()["detail"],
             "Please upload a CSV encoded as UTF-8.",
         )
+
+    def test_repeated_rows_match_first_occurrence(self):
+        response = self.upload(
+            b"name,age\nAsha,24\nBen,31\nAsha,24\nAsha,24\n"
+        )
+
+        self.assertEqual(response.status_code, 200)
+        report = response.json()
+
+        self.assertEqual(report["duplicate_count"], 2)
+        self.assertEqual(
+            report["duplicate_rows"],
+            [
+                {"row": 3, "matches_row": 1},
+                {"row": 4, "matches_row": 1},
+            ],
+        )
+    

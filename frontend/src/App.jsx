@@ -92,6 +92,21 @@ function App() {
             <dd>{report.duplicate_count}</dd>
           </dl>
 
+          <h3>Duplicate row details</h3>
+<p>Row numbers exclude the header.</p>
+
+{report.duplicate_rows.length === 0 ? (
+  <p>No duplicate rows found.</p>
+) : (
+  <ul>
+    {report.duplicate_rows.map((duplicate) => (
+      <li key={duplicate.row}>
+        Row {duplicate.row} — matches row {duplicate.matches_row}
+      </li>
+    ))}
+  </ul>
+)}
+
           <h3>Blank values by column</h3>
           <table>
   <thead>
