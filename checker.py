@@ -1,7 +1,11 @@
 import csv
 import sys
-def analyze_csv(file):
-    reader = csv.DictReader(file, strict=True)
+def analyze_csv(file, delimiter=","):
+    reader = csv.DictReader(
+        file,
+        delimiter=delimiter,
+        strict=True,
+    )
     columns = reader.fieldnames
 
     if not columns:

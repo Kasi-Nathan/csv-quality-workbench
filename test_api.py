@@ -9,10 +9,15 @@ client = TestClient(app)
 
 
 class TestCsvUpload(unittest.TestCase):
-    def upload(self, contents):
+    def upload(self, contents, delimiter=None):
+        data = {}
+        if delimiter is not None:
+            data["delimiter"] = delimiter
+
         return client.post(
             "/api/analyze",
             files={"file": ("test.csv", contents, "text/csv")},
+            data=data,
         )
 
     def test_clean_csv(self):
@@ -81,4 +86,42 @@ class TestCsvUpload(unittest.TestCase):
                 {"row": 4, "matches_row": 1},
             ],
         )
-    
+
+    def test_semicolon_delimiter(self):
+        response = self.upload(
+            b"name;age\nAsha;24\nBen;\nAsha;24\n",
+            delimiter=";",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        report = response.json()
+        self.assertEqual(report["columns"], ["name", "age"])
+        self.assertEqual(report["row_count"], 3)
+        self.assertEqual(report["blank_counts"], {"name": 0, "age": 1})
+        self.assertEqual(
+            report["duplicate_rows"],
+            [{"row": 3, "matches_row": 1}],
+        )
+
+    def test_tab_delimiter(self):
+        response = self.upload(
+            b"name\tage\nAsha\t24\nBen\t31\n",
+            delimiter="\t",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        report = response.json()
+        self.assertEqual(report["columns"], ["name", "age"])
+        self.assertEqual(report["row_count"], 2)
+
+    def test_invalid_delimiter(self):
+        response = self.upload(
+            b"name|age\nAsha|24\n",
+            delimiter="|",
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(
+            response.json()["detail"],
+            "Delimiter must be a comma, semicolon, or tab.",
+        )
