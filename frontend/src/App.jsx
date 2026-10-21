@@ -6,6 +6,7 @@ function App() {
   const [report, setReport] = useState(null)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [delimiter, setDelimiter] = useState(',')
 
   function handleFileChange(event) {
     setFile(event.target.files[0] ?? null)
@@ -24,6 +25,7 @@ function App() {
     try {
       const formData = new FormData()
       formData.append('file', file)
+      formData.append('delimiter', delimiter)
 
       const response = await fetch('/api/analyze', {
         method: 'POST',
@@ -58,21 +60,36 @@ function App() {
       <p>Check your CSV for blank values and duplicate rows.</p>
 
       <form onSubmit={handleAnalyze}>
-        <label htmlFor="csv-file">Choose a CSV file</label>
-        <input
-          id="csv-file"
-          type="file"
-          accept=".csv,text/csv"
-          onChange={handleFileChange}
-          disabled={loading}
-        />
-        <p>UTF-8 encoding · Maximum 5 MiB</p>
+  <label htmlFor="csv-file">Choose a CSV file</label>
+  <input
+    id="csv-file"
+    type="file"
+    accept=".csv,text/csv"
+    onChange={handleFileChange}
+    disabled={loading}
+  />
+  <p>UTF-8 encoding · Maximum 5 MiB</p>
 
-        <button type="submit" disabled={!file || loading}>
-          {loading ? 'Analyzing…' : 'Analyze'}
-        </button>
-      </form>
+  <label htmlFor="delimiter">Delimiter</label>
+  <select
+    id="delimiter"
+    value={delimiter}
+    disabled={loading}
+    onChange={(event) => {
+      setDelimiter(event.target.value)
+      setReport(null)
+      setError('')
+    }}
+  >
+    <option value=",">Comma (,)</option>
+    <option value=";">Semicolon (;)</option>
+    <option value={'\t'}>Tab</option>
+  </select>
 
+  <button type="submit" disabled={!file || loading}>
+    {loading ? 'Analyzing…' : 'Analyze'}
+  </button>
+</form>
       {loading && <p role="status">Analyzing your file…</p>}
       {error && <p role="alert">{error}</p>}
 

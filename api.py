@@ -1,7 +1,7 @@
 import csv
 import io
 
-from fastapi import FastAPI, HTTPException, UploadFile
+from fastapi import FastAPI, Form, HTTPException, UploadFile
 
 from checker import analyze_csv
 
@@ -11,7 +11,16 @@ MAX_FILE_SIZE = 5 * 1024 * 1024
 
 
 @app.post("/api/analyze")
-def analyze_upload(file: UploadFile):
+def analyze_upload(
+    file: UploadFile,
+    delimiter: str = Form(","),
+):
+    if delimiter not in {",", ";", "\t"}:
+        raise HTTPException(
+            status_code=400,
+            detail="Delimiter must be a comma, semicolon, or tab.",
+        )
+
     contents = file.file.read(MAX_FILE_SIZE + 1)
 
     if len(contents) > MAX_FILE_SIZE:
@@ -22,7 +31,10 @@ def analyze_upload(file: UploadFile):
 
     try:
         text = contents.decode("utf-8-sig")
-        report = analyze_csv(io.StringIO(text, newline=""))
+        report = analyze_csv(
+            io.StringIO(text, newline=""),
+            delimiter=delimiter,
+        )
     except UnicodeDecodeError:
         raise HTTPException(
             status_code=400,
